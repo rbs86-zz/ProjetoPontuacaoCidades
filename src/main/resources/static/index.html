@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Projeto Pontuação Cidades</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<script type="text/javascript" src="jquery-3.2.1.js"></script>
+<!--<script src="<c:url value="jquery-3.2.1.js"></script>-->
+
+<body>
+<form>
+    Cidade:
+    <input type="text" id="nomeCidade" name="nomeCidade"/>
+
+    Estado:
+    <input type="text" id="nomeEstado" name="nomeEstado"/>
+
+    <input type="button" value="Buscar" onclick="pesquisa()"/>
+
+    <div id="loading" style="display: none;">Carregando...</div>
+    <br/><br/>
+
+    <table id="tabelaCidades" border="1" style="padding: 10px; display: none;">
+        <tr><td>Row 1, Column 1</td><td>Row 1, Column
+            2</td><td>Ver pontuação</td></tr>
+    </table>
+
+</form>
+</body>
+
+<script>
+function pesquisa(){
+    var data = {};
+    data.nomeCidade = $("#nomeCidade").val();
+    data.nomeEstado = $("#nomeEstado").val();
+
+    var onSuccess = function(data){
+        if(data.length == 0){
+            onError();
+        }
+        else {
+            var content = "";
+            for (var i = 0; i < data.length; i++) {
+                content = "<tr><td>" + data[i].nome + "</td><td>" + data[i].estado +
+                    "</td><td><a href='#' id=\"linkPontuacao\" onclick=\"buscaPontos('" + data[i].nome + "','" +
+                    data[i].estado + "')\">Ver pontuação</a></td></tr>";
+                $("#tabelaCidades").append(content);
+            }
+            $("#tabelaCidades").css('display', '');
+        }
+    };
+
+    var onError = function(){
+        alert("Nenhum resultado encontrado!");
+    };
+
+    $("#loading").css('display','');
+    $("#tabelaCidades").css('display', 'none');
+    $("#tabelaCidades").empty();
+    ajaxCall("http://localhost:8080/ws/buscaCidade", "GET", data, onSuccess, onError);
+}
+
+function ajaxCall(url, type, data, onSuccess, onError){
+    console.log(data);
+    $.ajax({type: type,
+        url: url,
+        cache: false,
+        data: data,
+        async: true,
+        success: function(data, textStatus, jqXHR){
+            $("#loading").css('display','none');
+            if(onSuccess != undefined){
+                console.log(data);
+                console.log(textStatus);
+                onSuccess(data, textStatus, jqXHR);
+            }
+        },
+        error: function(request, status, error){
+            $("#loading").css('display','none');
+            if(onError != undefined){
+                console.log(request);
+                console.log(status);
+                console.log(error);
+                onError(request, status, error);
+            }
+        }
+    });
+}
+
+function buscaPontos(nomeCidade, nomeEstado) {
+    var onSuccess = function(data){
+        console.log(data)
+        alert('A pontuação da cidade ' + nomeCidade + ' é ' + data);
+    };
+
+    var onError = function(){
+        alert("Nenhum resultado encontrado!");
+    };
+
+    ajaxCall("http://localhost:8080/ws/buscaPontos", "POST", {nome: nomeCidade, estado: nomeEstado}, onSuccess,
+        onError);
+};
+
+</script>
+
+</html>
