@@ -53,4 +53,20 @@ public class CityServiceTests {
         assertEquals(249, cidadeList.size());
         cidadeList.forEach(c -> c.getNome().toUpperCase().contains(nomeCidade.toUpperCase()));
     }
+    
+    @Test
+    public void buscaTodasCidadesSemResultadosTest() throws RemoteException, MalformedURLException {
+    	String nomeCidade = "zzzzzzz";
+    	List<Cidade> cidadeList = this.cityService.buscaCidadesPorNome(nomeCidade);
+    	assertTrue(cidadeList.isEmpty());
+    }
+    
+    @Test
+    public void verPontuacaoTest() throws RemoteException, MalformedURLException {
+    	String nomeCidade = "Barueri";
+    	String nomeEstado = "São Paulo";
+    	Cidade cidade = new Cidade(nomeEstado, nomeCidade);
+    	Integer quantidadePontos = this.cityService.buscaPontos(cidade);
+    	assertEquals(Integer.valueOf(500000), quantidadePontos);
+    }
 }

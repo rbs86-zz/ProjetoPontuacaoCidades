@@ -8,6 +8,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface CityService {
-
     List<Cidade> buscaCidadesPorNome(String nomeCidade) throws RemoteException, MalformedURLException;
+	Integer buscaPontos(Cidade cidade) throws MalformedURLException, RemoteException;
 }
